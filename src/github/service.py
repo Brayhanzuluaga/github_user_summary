@@ -1,20 +1,20 @@
 from typing import Dict, Any
 import asyncio
 
-from services.github_services import github_api_client
+from src.github.client import GitHubAPIClient
 
 
 class GitHubService:
     """Service with business logic for GitHub operations"""
     
-    def __init__(self):
-        self.github_client = github_api_client
+    def __init__(self, github_client: GitHubAPIClient):
+        self.github_client = github_client
     
     async def get_authenticated_user(self, token: str) -> Dict[str, Any]:
         """
-        Gets and processes complete information of the authenticated user.
+        Gets and processes complete authenticated user information.
         
-        Gets:
+        Retrieves:
         - Basic user information
         - Repositories (public and private)
         - Organizations
@@ -70,6 +70,7 @@ class GitHubService:
         }
     
     async def _get_user_pull_requests(self, token: str) -> list:
+        """Gets user pull requests safely"""
         try:
             user_data = await self.github_client.get_user(token)
             username = user_data.get("login")
@@ -81,6 +82,7 @@ class GitHubService:
             return []
     
     def _process_repositories(self, repos: list) -> list:
+        """Processes and formats repository list"""
         return [
             {
                 "name": repo.get("name"),
@@ -97,6 +99,7 @@ class GitHubService:
         ]
     
     def _process_organizations(self, orgs: list) -> list:
+        """Processes and formats organization list"""
         return [
             {
                 "login": org.get("login"),
@@ -108,6 +111,7 @@ class GitHubService:
         ]
     
     def _process_pull_requests(self, prs: list) -> list:
+        """Processes and formats pull request list"""
         return [
             {
                 "title": pr.get("title"),
@@ -119,4 +123,3 @@ class GitHubService:
             for pr in prs
         ]
 
-github_service = GitHubService()

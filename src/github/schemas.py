@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 class RepositoryInfo(BaseModel):
-    
+    """GitHub repository information"""
     name: str = Field(..., description="Repository name")
     full_name: str = Field(..., description="Full name (user/repo)")
     private: bool = Field(..., description="Whether the repository is private or public")
@@ -17,7 +17,7 @@ class RepositoryInfo(BaseModel):
 
 
 class OrganizationInfo(BaseModel):
-    
+    """GitHub organization information"""
     login: str = Field(..., description="Organization username")
     id: int = Field(..., description="Organization ID")
     avatar_url: str = Field(..., description="Avatar URL")
@@ -25,7 +25,7 @@ class OrganizationInfo(BaseModel):
 
 
 class PullRequestInfo(BaseModel):
-    
+    """Pull request information"""
     title: str = Field(..., description="Pull request title")
     number: int = Field(..., description="Pull request number")
     state: str = Field(..., description="State (open, closed, merged)")
@@ -34,7 +34,7 @@ class PullRequestInfo(BaseModel):
 
 
 class UserInfo(BaseModel):
-    
+    """Basic GitHub user information"""
     login: str = Field(..., description="GitHub username")
     name: Optional[str] = Field(None, description="Full name")
     company: Optional[str] = Field(None, description="Company")
@@ -44,7 +44,7 @@ class UserInfo(BaseModel):
 
 
 class SummaryInfo(BaseModel):
-    
+    """User statistical summary"""
     public_repos: int = Field(..., description="Number of public repositories")
     public_gists: int = Field(..., description="Number of public gists")
     total_repositories: int = Field(..., description="Total repositories (public + private)")
@@ -53,7 +53,7 @@ class SummaryInfo(BaseModel):
 
 
 class GitHubUserResponse(BaseModel):
-    
+    """Complete response with GitHub user information"""
     user: UserInfo = Field(..., description="Basic user information")
     summary: SummaryInfo = Field(..., description="Statistical summary")
     repositories: List[RepositoryInfo] = Field(default_factory=list, description="List of repositories")
@@ -84,8 +84,3 @@ class GitHubUserResponse(BaseModel):
             }
         }
 
-
-class ErrorResponse(BaseModel):
-    
-    detail: str = Field(..., description="Error description")
-    status_code: int = Field(..., description="HTTP status code")

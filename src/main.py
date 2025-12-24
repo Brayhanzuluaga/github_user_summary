@@ -3,19 +3,21 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.config import settings
-from app.modules.github.controller import router as github_router
+from src.config import get_settings
+from src.github.router import router as github_router
+
+settings = get_settings()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifespan event handler for startup and shutdown"""
     # Startup
-    print(f"🚀 {settings.app_name} v{settings.app_version} started")
-    print(f"📚 Documentation: http://localhost:8000/docs")
+    print(f"[STARTUP] {settings.app_name} v{settings.app_version} started")
+    print(f"[INFO] Documentation: http://localhost:8000/docs")
     yield
     # Shutdown
-    print(f"👋 {settings.app_name} stopped")
+    print(f"[SHUTDOWN] {settings.app_name} stopped")
 
 
 app = FastAPI(
@@ -23,12 +25,20 @@ app = FastAPI(
     version=settings.app_version,
     description="""
     REST API to get GitHub user information.
+    
+    ## Features
+    - GitHub personal access token authentication
+    - Retrieve complete user information
+    - List repositories (public and private)
+    - User organizations
+    - User pull requests
     """,
     docs_url="/docs",
     redoc_url="/redoc",
     lifespan=lifespan,
 )
 
+# CORS configuration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -37,4 +47,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Register routers
 app.include_router(github_router)
+

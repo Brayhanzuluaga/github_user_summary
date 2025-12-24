@@ -1,17 +1,16 @@
 import httpx
 from typing import Dict, Any, List
 
-from app.core.config import settings
-from utils.error_handler import HTTPErrorHandler
+from src.config import Settings
+from src.exceptions import handle_github_response, handle_timeout, handle_connection_error
 
 
 class GitHubAPIClient:
     """Client for communicating with GitHub API"""
     
-    def __init__(self):
+    def __init__(self, settings: Settings):
         self.base_url = settings.github_api_base_url
         self.api_version = settings.github_api_version
-        self.error_handler = HTTPErrorHandler()
     
     def _get_headers(self, token: str) -> Dict[str, str]:
         """Generates common headers for GitHub requests"""
@@ -41,12 +40,12 @@ class GitHubAPIClient:
                     headers=self._get_headers(token),
                     timeout=10.0
                 )
-                return self.error_handler.handle_response(response)
+                return handle_github_response(response)
                 
         except httpx.TimeoutException:
-            self.error_handler.handle_timeout()
+            handle_timeout()
         except httpx.RequestError as e:
-            self.error_handler.handle_connection_error(e)
+            handle_connection_error(e)
     
     async def get_repositories(self, token: str, per_page: int = 100) -> List[Dict[str, Any]]:
         """
@@ -67,12 +66,12 @@ class GitHubAPIClient:
                     params={"per_page": per_page, "sort": "updated", "type": "all"},
                     timeout=15.0
                 )
-                return self.error_handler.handle_response(response)
+                return handle_github_response(response)
                 
         except httpx.TimeoutException:
-            self.error_handler.handle_timeout()
+            handle_timeout()
         except httpx.RequestError as e:
-            self.error_handler.handle_connection_error(e)
+            handle_connection_error(e)
     
     async def get_organizations(self, token: str) -> List[Dict[str, Any]]:
         """
@@ -91,12 +90,12 @@ class GitHubAPIClient:
                     headers=self._get_headers(token),
                     timeout=10.0
                 )
-                return self.error_handler.handle_response(response)
+                return handle_github_response(response)
                 
         except httpx.TimeoutException:
-            self.error_handler.handle_timeout()
+            handle_timeout()
         except httpx.RequestError as e:
-            self.error_handler.handle_connection_error(e)
+            handle_connection_error(e)
     
     async def get_pull_requests(self, token: str, username: str, per_page: int = 100) -> List[Dict[str, Any]]:
         """
@@ -104,7 +103,7 @@ class GitHubAPIClient:
         
         Args:
             token: GitHub personal access token
-            username: User username
+            username: Username
             per_page: Number of PRs per page (max 100)
             
         Returns:
@@ -122,10 +121,11 @@ class GitHubAPIClient:
                     },
                     timeout=15.0
                 )
-                result = self.error_handler.handle_response(response)
+                result = handle_github_response(response)
                 return result.get("items", [])
                 
         except httpx.TimeoutException:
-            self.error_handler.handle_timeout()
+            handle_timeout()
         except httpx.RequestError as e:
-            self.error_handler.handle_connection_error(e)
+            handle_connection_error(e)
+

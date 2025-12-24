@@ -2,40 +2,45 @@
 
 REST API built with FastAPI to retrieve GitHub user information.
 
-## ✨ Features
+##  Features
 
-- 🚀 REST API with FastAPI
-- 🔒 GitHub Personal Access Token authentication
-- 📚 Automatic Swagger UI documentation
-- 🐳 Dockerized and production-ready
-- 🏗️ Modular feature-based architecture
-- 🔄 CORS enabled
+-  REST API with FastAPI
+-  GitHub Personal Access Token authentication
+-  Automatic Swagger UI documentation
+-  Dockerized and production-ready
+-  Modular feature-based architecture
+-  Unit tests with pytest
+-  CORS enabled
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 github_user_summary/
-├── app/
-│   ├── main.py
-│   ├── core/
-│   │   ├── config.py
-│   │   └── security.py
-│   └── modules/
-│       └── github/
-│           ├── controller/
-│           ├── schemas/
-│           └── services/
-├── services/
-│   └── github_services/
-├── utils/
-│   └── error_handler/
+├── src/
+│   ├── github/
+│   │   ├── __init__.py
+│   │   ├── router.py          # API endpoints
+│   │   ├── schemas.py         # Pydantic models
+│   │   ├── service.py         # Business logic
+│   │   └── client.py          # GitHub API client
+│   ├── __init__.py
+│   ├── config.py              # Global configuration
+│   ├── dependencies.py        # FastAPI dependencies
+│   ├── exceptions.py          # Error handlers
+│   └── main.py                # FastAPI app
+├── tests/
+│   ├── __init__.py
+│   └── github/
+│       ├── __init__.py
+│       └── test_service.py    # Service unit tests
 ├── docker-compose.yml
 ├── Dockerfile
+├── pytest.ini                 # Pytest configuration
 ├── requirements.txt
 └── README.md
 ```
 
-## 🛠️ Prerequisites
+##  Prerequisites
 
 - Python >= 3.12
 - Docker & Docker Compose (optional)
@@ -46,7 +51,7 @@ github_user_summary/
   
   → [Create token here](https://github.com/settings/tokens)
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Option 1: Docker Compose (Recommended)
 
@@ -82,10 +87,40 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 # Run the server
-uvicorn app.main:app --reload
+uvicorn src.main:app --reload
 ```
 
 The API will be available at `http://localhost:8000`
+
+## 🧪 Running Tests
+
+### Run All Tests
+
+```bash
+
+# Run all tests
+pytest
+
+# Run tests with verbose output
+pytest -v
+
+# Run tests for a specific module
+pytest tests/github/test_service.py
+```
+
+### Test Structure
+
+```
+tests/
+├── github/
+│   └── test_service.py    # Tests for GitHubService
+└── __init__.py
+```
+
+The tests use:
+- **pytest** for test framework
+- **pytest-asyncio** for async test support
+- **unittest.mock** for mocking external dependencies
 
 ## 🌐 API Endpoint
 
@@ -99,10 +134,10 @@ Authorization: Bearer {your_github_token}
 
 **Example:**
 ```bash
-curl -H "Authorization: Bearer ghp_your_token" http://localhost:8000/github/user
+curl -H "Authorization: Bearer ghp_your_token" http://localhost:8000/github/user-summary
 ```
 
-## 📚 Interactive Documentation
+##  Interactive Documentation
 
 Once the server is running, access:
 
@@ -116,24 +151,26 @@ Once the server is running, access:
 4. Click **"Authorize"** → **"Close"**
 5. Try endpoints with **"Try it out"** → **"Execute"**
 
-## 🏗️ Architecture
+##  Architecture
 
-The project uses a **modular feature-based architecture**:
+The project follows **FastAPI best practices** with a **modular feature-based architecture**:
 
 ```
 HTTP Client
     ↓
-Controller (API endpoints)
+Router (API endpoints)
     ↓
 Service (business logic)
     ↓
-GitHub Service (API client)
+Client (GitHub API communication)
     ↓
 GitHub API
 ```
 
 **Key Components:**
-- **Controllers**: Define REST endpoints
-- **Services**: Business logic and data processing
-- **GitHub Service**: HTTP client for GitHub API with error handling
-- **Schemas**: Pydantic models for validation and documentation
+- **Router**: Define REST endpoints and route handling
+- **Service**: Business logic and data processing
+- **Client**: HTTP client for GitHub API communication
+- **Schemas**: Pydantic models for request/response validation
+- **Dependencies**: Reusable FastAPI dependencies (auth, etc.)
+- **Exceptions**: Centralized error handling
